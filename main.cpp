@@ -3,53 +3,61 @@
  */
 #include <raylib.h>
 
-int main(void) {
-    const int screen_width = 800;
-    const int screen_height = 600;
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(screen_width, screen_height, "Simple 3D Cube in Raylib");
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
 
-    // Define the camera to look into our 3d world
-    Camera3D camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 45.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+const int TARGET_FPS = 60;
 
-    Vector3 cube_position = { 0.0f, 0.0f, 0.0f };
+void render(Camera3D camera, Vector3 cube_position) {
+    BeginDrawing();
 
-    SetTargetFPS(60);
+        ClearBackground(GRAY);
 
-    while (!WindowShouldClose()) {
-        // Update your variables here
+        BeginMode3D(camera);
+
+            DrawCube(cube_position, 2.0f, 2.0f, 2.0f, RED);
+            DrawCubeWires(cube_position, 2.0f, 2.0f, 2.0f, MAROON);
+
+            DrawGrid(10, 1.0f);
+
+        EndMode3D();
+
+        DrawText("Welcome to the third dimension!", 10, 40, 20, DARKGRAY);
+
+        DrawFPS(10, 10);
+
+    EndDrawing();
+
+    if (!WindowShouldClose()) {
         /*cube_position.x += 0.01f;
         if (cube_position.x > 10.0f) {
             cube_position.x = -10.0f;
         }*/
+
         UpdateCamera(&camera, CAMERA_FREE);
 
         if (IsKeyPressed(KEY_Z)) camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
 
-        BeginDrawing();
-
-            ClearBackground(GRAY);
-
-            BeginMode3D(camera);
-
-                DrawCube(cube_position, 2.0f, 2.0f, 2.0f, RED);
-                DrawCubeWires(cube_position, 2.0f, 2.0f, 2.0f, MAROON);
-
-                DrawGrid(10, 1.0f);
-
-            EndMode3D();
-
-            DrawText("Welcome to the third dimension!", 10, 40, 20, DARKGRAY);
-
-            DrawFPS(10, 10);
-
-        EndDrawing();
+        render(camera, cube_position);
     }
+}
+
+int main(void) {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simple 3D Cube in Raylib");
+
+    Camera3D camera = { position: (Vector3){ 0.0f, 10.0f, 10.0f }
+                      , target: (Vector3){ 0.0f, 0.0f, 0.0f }
+                      , up: (Vector3){ 0.0f, 1.0f, 0.0f }
+                      , fovy: 45.0f
+                      , projection: CAMERA_PERSPECTIVE
+                      };
+
+    Vector3 cube_position = { 0.0f, 0.0f, 0.0f };
+
+    SetTargetFPS(TARGET_FPS);
+
+    render(camera, cube_position);
 
     CloseWindow();
     return 0;
